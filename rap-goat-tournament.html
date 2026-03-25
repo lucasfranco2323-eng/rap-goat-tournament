@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>RAP GOAT TOURNAMENT PRO</title>
+<style>
+body { font-family: Arial, sans-serif; background:#0b0b0b; color:#fff; text-align:center; }
+.container { max-width:1100px; margin:auto; padding:20px; }
+h1 { margin-bottom:10px; }
+.grid { display:flex; justify-content:space-between; margin-top:30px; }
+.round { width:30%; }
+.match { margin:15px 0; }
+.card {
+ background:#1a1a1a;
+ padding:15px;
+ border-radius:10px;
+ margin:5px;
+ cursor:pointer;
+ transition:0.2s;
+}
+.card:hover { background:#f39c12; color:#000; }
+.winner { background:#2ecc71 !important; color:#000; }
+button {
+ padding:10px 20px;
+ margin-top:10px;
+ cursor:pointer;
+ border:none;
+ border-radius:5px;
+ background:#f39c12;
+ font-weight:bold;
+}
+iframe { margin-top:10px; border-radius:10px; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🏆 RAP GOAT TOURNAMENT 🏆</h1>
+<div id="app"></div>
+</div>
+
+<script>
+const data = [
+{ name:"Eminem", track:"Till I Collapse", yt:"https://www.youtube.com/embed/ytQ5CYE1VZw" },
+{ name:"WOS", track:"Arrancármelo", yt:"https://www.youtube.com/embed/5s3W7p4sD2g" },
+{ name:"Tupac", track:"California Love", yt:"https://www.youtube.com/embed/5wBTdfAkqGU" },
+{ name:"Trueno", track:"Dance Crip", yt:"https://www.youtube.com/embed/4mG2R4HcZ5s" },
+{ name:"Nas", track:"NY State of Mind", yt:"https://www.youtube.com/embed/hI8A14Qcv68" },
+{ name:"Kendrick Lamar", track:"HUMBLE", yt:"https://www.youtube.com/embed/tvTRZJ-4EyI" },
+{ name:"Canserbero", track:"Es Épico", yt:"https://www.youtube.com/embed/Q5NnE4s1XcE" },
+{ name:"Duki", track:"Goteo", yt:"https://www.youtube.com/embed/bwZ6p7n7H9Q" }
+];
+
+let bracket = [];
+let rounds = [];
+
+function init(){
+bracket = shuffle([...data]);
+rounds = [bracket];
+render();
+}
+
+function shuffle(arr){ return arr.sort(()=>Math.random()-0.5); }
+
+function nextRound(winners){
+rounds.push(winners);
+render();
+}
+
+function render(){
+let html = `<div class='grid'>`;
+
+rounds.forEach((round, rIndex)=>{
+html += `<div class='round'><h3>Ronda ${rIndex+1}</h3>`;
+for(let i=0;i<round.length;i+=2){
+if(round[i+1]){
+html += `<div class='match'>
+<div class='card' onclick='selectWinner(${rIndex},${i})'>${round[i].name}<br>${round[i].track}</div>
+<div class='card' onclick='selectWinner(${rIndex},${i+1})'>${round[i+1].name}<br>${round[i+1].track}</div>
+</div>`;
+}
+}
+html += `</div>`;
+});
+
+html += `</div>`;
+
+if(rounds[rounds.length-1].length === 1){
+let win = rounds[rounds.length-1][0];
+html += `<h2>🏆 GANADOR: ${win.name}</h2>
+<iframe width='300' height='170' src='${win.yt}' allowfullscreen></iframe>
+<br><button onclick='init()'>Reiniciar</button>`;
+}
+
+document.getElementById("app").innerHTML = html;
+}
+
+function selectWinner(roundIndex, index){
+let round = rounds[roundIndex];
+let winners = rounds[roundIndex+1] || [];
+
+let matchIndex = Math.floor(index/2);
+winners[matchIndex] = round[index];
+
+rounds[roundIndex+1] = winners.filter(Boolean);
+
+if(winners.filter(Boolean).length === round.length/2){
+nextRound(rounds[roundIndex+1]);
+} else {
+render();
+}
+}
+
+init();
+</script>
+</body>
+</html>
